@@ -1,0 +1,22 @@
+/*подключение шрифтов*/
+@import '_config.css';
+
+.container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: mediumslateblue;
+    width: 100%;
+    text-align: center;
+}
+
+.logo {
+    background-image: url("../../assets/images/example_logo.png");
+    background-size: cover;
+    width: 50px;
+    height: 40px;
+}
