@@ -23,9 +23,10 @@ const optimization = () => {
 const filename = (ext) => isDev ? `[name].${ext}` : `[name].[hash].${ext}`;
 
 const plugins = () => {
-    const base = [
+    const basePlugins = [
         new HtmlWebpackPlugin({
             template: './index.html',
+            // минифицировать при production mode
             minify: {
                 collapseWhitespace: !isDev
             }
@@ -34,17 +35,19 @@ const plugins = () => {
         new MiniCssExtractPlugin({
             filename: filename('css'),
         }),
-        new CopyWebpackPlugin({patterns:[
-                {
-                    from: path.resolve(__dirname, 'src/assets'),
-                    to: path.resolve(__dirname, 'public/assets')
-                }
-            ]})
+        // копировать статические файлы и папки
+        // new CopyWebpackPlugin({patterns:[
+        //         {
+        //             from: path.resolve(__dirname, 'src/assets/favicon.png'),
+        //             to: path.resolve(__dirname, 'public/assets/favicon.png')
+        //         }
+        //     ]})
     ];
-    if (!isDev) {
-        base.push(new BundleAnalyzerPlugin());
-    }
-    return base;
+    // Bundle analyze при билде в production
+    // if (!isDev) {
+    //     basePlugins.push(new BundleAnalyzerPlugin());
+    // }
+    return basePlugins;
 }
 
 module.exports = {
@@ -52,7 +55,8 @@ module.exports = {
     mode: 'development',
     entry: {
         main: ['@babel/polyfill', './index.js']
-        // second: './second.js' // второстепенный js файл (если есть кроме index.js)
+        // второстепенный js файл (если есть кроме index.js)
+        // second: './second.js'
     },
     output: {
         filename: filename('js'),
@@ -91,11 +95,23 @@ module.exports = {
             },
             {
                 test: /\.(png|jpg|jpeg|gif|svg)$/,
-                use: ['file-loader']
+                loader: 'file-loader',
+                include: path.resolve(__dirname, 'src/assets/images'),
+                options: {
+                    limit: 10000,
+                    name: isDev ? '[name].[ext]' : '[name].[hash].[ext]',
+                    outputPath: './assets/images',
+                }
             },
             {
                 test: /\.(ttf|woff|woff2|eot)$/,
-                use: ['file-loader']
+                loader: 'file-loader',
+                include: path.resolve(__dirname, 'src/assets/fonts'),
+                options: {
+                    limit: 10000,
+                    name: '[name].[ext]',
+                    outputPath: './assets/fonts',
+                }
             },
             {
                 test: /\.js$/,
